@@ -1,0 +1,7 @@
+[package]
+name = "prettytime"
+version = "0.1.0"
+authors = ["Rory McCann <rory@geofabrik.de>"]
+
+[dependencies]
+num = "*"
