@@ -18,7 +18,7 @@ extern crate num;
 
 use std::env;
 use std::fmt;
-use num::integer::div_rem;
+use num::integer::{div_rem, Integer};
 
 struct Duration<T> {
     weeks: T,
@@ -28,22 +28,60 @@ struct Duration<T> {
     seconds: T,
 }
 
+impl<T:Integer> Duration<T> {
+    fn new() -> Duration<T> {
+        Duration{ weeks: T::zero(), days: T::zero(), hours: T::zero(), minutes: T::zero(), seconds: T::zero() }
+    }
+
+    fn set_weeks<'a>(&'a mut self, weeks: T) -> &'a mut Duration<T> {
+        self.weeks = weeks;
+        self
+    }
+    fn set_days<'a>(&'a mut self, days: T) -> &'a mut Duration<T> {
+        self.days = days;
+        self
+    }
+    fn set_hours<'a>(&'a mut self, hours: T) -> &'a mut Duration<T> {
+        self.hours = hours;
+        self
+    }
+    fn set_minutes<'a>(&'a mut self, minutes: T) -> &'a mut Duration<T> {
+        self.minutes = minutes;
+        self
+    }
+    fn set_seconds<'a>(&'a mut self, seconds: T) -> &'a mut Duration<T> {
+        self.seconds = seconds;
+        self
+    }
+
+}
+
 impl fmt::Display for Duration<u64> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut writing = false;
         if self.weeks != 0 {
             try!(write!(f, "{}wk", self.weeks));
+            writing = true;
         }
-        if self.days != 0 {
+        if self.days != 0 || writing {
             try!(write!(f, "{}dy", self.days));
+            writing = true;
         }
-        if self.hours != 0 {
+        if self.hours != 0 || writing {
             try!(write!(f, "{}h", self.hours));
+            writing = true;
         }
-        if self.minutes != 0 {
+        if self.minutes != 0 || writing {
             try!(write!(f, "{}m", self.minutes));
+            writing = true;
         }
-        if self.seconds != 0 {
-            try!(write!(f, "{}s", self.seconds));
+        if self.seconds != 0 || writing {
+            if writing {
+                try!(write!(f, "{:02}s", self.seconds));
+            } else {
+                try!(write!(f, "{}s", self.seconds));
+            }
+            writing = true;
         }
         Ok(())
     }
@@ -77,4 +115,13 @@ fn main() {
         Ok(s) => { println!("{}", s); },
         Err(s) => { println!("{}", s); }
     }
+}
+
+#[test]
+fn test_print_duration() {
+    assert_eq!("", format!("{}", Duration::new()));
+    assert_eq!("1s", format!("{}", Duration::new().set_seconds(1)));
+    assert_eq!("1m00s", format!("{}", Duration::new().set_minutes(1)));
+    assert_eq!("1m03s", format!("{}", Duration::new().set_minutes(1).set_seconds(3)));
+    assert_eq!("1hr00m00s", format!("{}", Duration::new().set_hours(1)));
 }
