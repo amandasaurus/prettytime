@@ -5,3 +5,4 @@ authors = ["Rory McCann <rory@geofabrik.de>"]
 
 [dependencies]
 num = "*"
+regex = "0.1"
