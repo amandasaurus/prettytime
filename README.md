@@ -11,6 +11,12 @@ Examples
     14wk0dy23hr23m12s
 
 
+Motivation
+==========
+
+If you have a duration in seconds (etc) and the number is very long, it can be fiddly to figure out how long it actually is. If `time(1)` told you that a programme took `297m` to complete, how long is that? With `prettytime`, it'll tell you that is `4hr57m00s`.
+
+
 Licence
 =======
 
