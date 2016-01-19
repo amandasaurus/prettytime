@@ -159,7 +159,7 @@ fn main() {
     let args: Vec<_> = env::args().skip(1).collect();
     match prettytime(args) {
         Ok(s) => { println!("{}", s); },
-        Err(s) => { println!("{}", s); }
+        Err(s) => { println!("{}", s); std::process::exit(1); }
     }
 }
 
