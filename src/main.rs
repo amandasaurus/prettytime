@@ -104,7 +104,7 @@ fn sec2duration(seconds: u64) -> Duration<u64> {
 }
 
 
-// Converts a textual input to 
+// Converts a textual input to the number of seconds this represents. String error if something went wrong.
 fn input2sec(input:String) -> Result<u64, String> {
     // TODO replace with regex! macro so the is guaranteed to be OK
 
