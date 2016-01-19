@@ -109,12 +109,34 @@ fn input2sec(input:String) -> Result<u64, String> {
     // TODO replace with regex! macro so the is guaranteed to be OK
 
     if let Some(cap) = Regex::new(r"^\s*(?P<sec>[0-9]+)\s*(s|sec|seconds?)?\s*$").unwrap().captures(&input) {
+        // Just numbers, interpret as seconds
         let sec: u64 = try!(try!(cap.name("sec").ok_or("0")).parse().or(Err("Invalid seconds")));
         Ok(sec)
     } else if let Some(cap) = Regex::new(r"^\s*(?P<min>[0-9]+)\s*(m|min|minutes?)\s*((?P<sec>[0-9]+)\s*(s|sec|seconds?)?)?\s*$").unwrap().captures(&input) {
+        // XmYs
         let sec: u64 = try!(cap.name("sec").unwrap_or(&"0").parse::<u64>().or(Err("Invalid seconds")));
-        let min: u64 = try!(cap.name("min").unwrap_or(&"0").parse::<u64>().or(Err("Invalid seconds")));
+        let min: u64 = try!(cap.name("min").unwrap_or(&"0").parse::<u64>().or(Err("Invalid minutes")));
         Ok(min*60 + sec)
+    } else if let Some(cap) = Regex::new(r"^\s*(?P<min>[0-9]+):(?P<sec>[0-9][0-9])\s*$").unwrap().captures(&input) {
+        // 0:00
+        let sec: u64 = try!(cap.name("sec").unwrap_or(&"0").parse::<u64>().or(Err("Invalid seconds")));
+        let min: u64 = try!(cap.name("min").unwrap_or(&"0").parse::<u64>().or(Err("Invalid minutes")));
+        Ok(min*60 + sec)
+    } else if let Some(cap) = Regex::new(r"^\s*(?P<ms>[0-9]+)\s*(ms|msec|milliseconds?)\s*$").unwrap().captures(&input) {
+        // Milliseconds
+        let ms: u64 = try!(try!(cap.name("ms").ok_or("0")).parse().or(Err("Invalid milliseconds")));
+        let sec = ms / 1_000;
+        Ok(sec)
+    } else if let Some(cap) = Regex::new(r"^\s*(?P<ms>[0-9]+)\s*(μs|μsec|microsec|microseconds?)\s*$").unwrap().captures(&input) {
+        // Microseconds
+        let ms: u64 = try!(try!(cap.name("ms").ok_or("0")).parse().or(Err("Invalid microseconds")));
+        let sec = ms / 1_000_000;
+        Ok(sec)
+    } else if let Some(cap) = Regex::new(r"^\s*(?P<ms>[0-9]+)\s*(ns|nsec|nanosec|nanoseconds?)\s*$").unwrap().captures(&input) {
+        // Nanoseconds
+        let ms: u64 = try!(try!(cap.name("ms").ok_or("0")).parse().or(Err("Invalid microseconds")));
+        let sec = ms / 1_000_000_000;
+        Ok(sec)
     } else {
         Err("Invalid input".to_string())
     }
@@ -167,4 +189,27 @@ fn test_parse_input() {
     assert_eq!(input2sec("2m 20s".to_string()), Ok(140));
     assert_eq!(input2sec("2m20s".to_string()), Ok(140));
     assert_eq!(input2sec("   2 m   20  s   ".to_string()), Ok(140));
+    assert_eq!(input2sec("2:20".to_string()), Ok(140));
+    assert_eq!(input2sec("02:20".to_string()), Ok(140));
+    assert_eq!(input2sec("100:00".to_string()), Ok(6000));
+
+    // milliseconds
+    assert_eq!(input2sec("2000ms".to_string()), Ok(2));
+    assert_eq!(input2sec("2ms".to_string()), Ok(0));
+    assert_eq!(input2sec("2000 milliseconds".to_string()), Ok(2));
+    assert_eq!(input2sec("1500ms".to_string()), Ok(1));
+    assert_eq!(input2sec("1100ms".to_string()), Ok(1));
+    assert_eq!(input2sec("1999ms".to_string()), Ok(1));
+
+    // microseconds
+    assert_eq!(input2sec("2000000microsec".to_string()), Ok(2));
+    assert_eq!(input2sec("2000000μsec".to_string()), Ok(2));
+    assert_eq!(input2sec("2000000 μs".to_string()), Ok(2));
+
+    // nanoseconds
+    assert_eq!(input2sec("2000000000ns".to_string()), Ok(2));
+    assert_eq!(input2sec("2000000000 ns".to_string()), Ok(2));
+    assert_eq!(input2sec("2000000000 nsec".to_string()), Ok(2));
+    assert_eq!(input2sec("2000000000 nanosec".to_string()), Ok(2));
 }
+
