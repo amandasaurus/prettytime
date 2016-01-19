@@ -112,8 +112,8 @@ fn input2sec(input:String) -> Result<u64, String> {
         // Just numbers, interpret as seconds. Truncate the sub-seconds
         let sec: u64 = try!(try!(cap.name("sec").ok_or("0")).parse().or(Err("Invalid seconds")));
         Ok(sec)
-    } else if let Some(cap) = Regex::new(r"^\s*(?P<min>[0-9]+)\s*(m|min|minutes?)\s*((?P<sec>[0-9]+)\s*(s|sec|seconds?)?)?\s*$").unwrap().captures(&input) {
-        // XmYs
+    } else if let Some(cap) = Regex::new(r"^\s*(?P<min>[0-9]+)\s*(m|min|minutes?)\s*((?P<sec>[0-9]+)(\.[0-9]+)?\s*(s|sec|seconds?)?)?\s*$").unwrap().captures(&input) {
+        // XmYs. Truncate the subseconds
         let sec: u64 = try!(cap.name("sec").unwrap_or(&"0").parse::<u64>().or(Err("Invalid seconds")));
         let min: u64 = try!(cap.name("min").unwrap_or(&"0").parse::<u64>().or(Err("Invalid minutes")));
         Ok(min*60 + sec)
@@ -198,6 +198,8 @@ fn test_parse_input() {
     assert_eq!(input2sec("2:20".to_string()), Ok(140));
     assert_eq!(input2sec("02:20".to_string()), Ok(140));
     assert_eq!(input2sec("100:00".to_string()), Ok(6000));
+
+    assert_eq!(input2sec("10m12.123s".to_string()), Ok(612));
 
     // milliseconds
     assert_eq!(input2sec("2000ms".to_string()), Ok(2));
