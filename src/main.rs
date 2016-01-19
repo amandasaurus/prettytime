@@ -108,8 +108,8 @@ fn sec2duration(seconds: u64) -> Duration<u64> {
 fn input2sec(input:String) -> Result<u64, String> {
     // TODO replace with regex! macro so the is guaranteed to be OK
 
-    if let Some(cap) = Regex::new(r"^\s*(?P<sec>[0-9]+)\s*(s|sec|seconds?)?\s*$").unwrap().captures(&input) {
-        // Just numbers, interpret as seconds
+    if let Some(cap) = Regex::new(r"^\s*(?P<sec>[0-9]+)(\.[0-9]+)?\s*(s|sec|seconds?)?\s*$").unwrap().captures(&input) {
+        // Just numbers, interpret as seconds. Truncate the sub-seconds
         let sec: u64 = try!(try!(cap.name("sec").ok_or("0")).parse().or(Err("Invalid seconds")));
         Ok(sec)
     } else if let Some(cap) = Regex::new(r"^\s*(?P<min>[0-9]+)\s*(m|min|minutes?)\s*((?P<sec>[0-9]+)\s*(s|sec|seconds?)?)?\s*$").unwrap().captures(&input) {
@@ -182,6 +182,12 @@ fn test_parse_input() {
     assert_eq!(input2sec("10 s".to_string()), Ok(10));
     assert_eq!(input2sec("10 sec".to_string()), Ok(10));
     assert_eq!(input2sec("10 foos".to_string()), Err("Invalid input".to_string()));
+
+    // seconds with precision
+    assert_eq!(input2sec("10.5".to_string()), Ok(10));
+    assert_eq!(input2sec("10.5s".to_string()), Ok(10));
+    assert_eq!(input2sec("10.2 s".to_string()), Ok(10));
+    assert_eq!(input2sec("10.1 sec".to_string()), Ok(10));
 
     // minutes
     assert_eq!(input2sec("2m".to_string()), Ok(120));
