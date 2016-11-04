@@ -35,23 +35,23 @@ impl<T:Integer> Duration<T> {
         Duration{ weeks: T::zero(), days: T::zero(), hours: T::zero(), minutes: T::zero(), seconds: T::zero() }
     }
 
-    fn set_weeks<'a>(&'a mut self, weeks: T) -> &'a mut Duration<T> {
+    fn set_weeks(mut self, weeks: T) -> Duration<T> {
         self.weeks = weeks;
         self
     }
-    fn set_days<'a>(&'a mut self, days: T) -> &'a mut Duration<T> {
+    fn set_days(mut self, days: T) -> Duration<T> {
         self.days = days;
         self
     }
-    fn set_hours<'a>(&'a mut self, hours: T) -> &'a mut Duration<T> {
+    fn set_hours(mut self, hours: T) -> Duration<T> {
         self.hours = hours;
         self
     }
-    fn set_minutes<'a>(&'a mut self, minutes: T) -> &'a mut Duration<T> {
+    fn set_minutes(mut self, minutes: T) -> Duration<T> {
         self.minutes = minutes;
         self
     }
-    fn set_seconds<'a>(&'a mut self, seconds: T) -> &'a mut Duration<T> {
+    fn set_seconds(mut self, seconds: T) -> Duration<T> {
         self.seconds = seconds;
         self
     }
@@ -96,7 +96,7 @@ fn sec2duration(seconds: u64) -> Duration<u64> {
     let (days, hours) = div_rem(hours, 24);
     let (weeks, days) = div_rem(days, 7);
 
-    Duration{ weeks: weeks, days: days, hours: hours, minutes: minutes, seconds: seconds }
+    Duration::new().set_seconds(seconds).set_minutes(minutes).set_hours(hours).set_days(days).set_weeks(weeks)
 }
 
 
