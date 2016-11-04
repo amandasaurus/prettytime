@@ -66,27 +66,23 @@ impl fmt::Display for Duration<u64> {
             writing = true;
         }
         if self.days != 0 || writing {
+            if writing { try!(write!(f, " ")); }
             try!(write!(f, "{}dy", self.days));
             writing = true;
         }
         if self.hours != 0 || writing {
+            if writing { try!(write!(f, " ")); }
             try!(write!(f, "{}hr", self.hours));
             writing = true;
         }
         if self.minutes != 0 || writing {
-            if writing {
-                try!(write!(f, "{:02}m", self.minutes));
-            } else {
-                try!(write!(f, "{}m", self.minutes));
-            }
+            if writing { try!(write!(f, " ")); }
+            try!(write!(f, "{}m", self.minutes));
             writing = true;
         }
         if self.seconds != 0 || writing {
-            if writing {
-                try!(write!(f, "{:02}s", self.seconds));
-            } else {
-                try!(write!(f, "{}s", self.seconds));
-            }
+            if writing { try!(write!(f, " ")); }
+            try!(write!(f, "{}s", self.seconds));
             //writing = true;
         }
         Ok(())
@@ -167,11 +163,11 @@ fn main() {
 fn test_print_duration() {
     assert_eq!("", format!("{}", Duration::new()));
     assert_eq!("1s", format!("{}", Duration::new().set_seconds(1)));
-    assert_eq!("1m00s", format!("{}", Duration::new().set_minutes(1)));
-    assert_eq!("1m03s", format!("{}", Duration::new().set_minutes(1).set_seconds(3)));
-    assert_eq!("1hr00m00s", format!("{}", Duration::new().set_hours(1)));
-    assert_eq!("1dy0hr00m00s", format!("{}", Duration::new().set_days(1)));
-    assert_eq!("1wk0dy0hr00m00s", format!("{}", Duration::new().set_weeks(1)));
+    assert_eq!("1m 0s", format!("{}", Duration::new().set_minutes(1)));
+    assert_eq!("1m 3s", format!("{}", Duration::new().set_minutes(1).set_seconds(3)));
+    assert_eq!("1hr 0m 0s", format!("{}", Duration::new().set_hours(1)));
+    assert_eq!("1dy 0hr 0m 0s", format!("{}", Duration::new().set_days(1)));
+    assert_eq!("1wk 0dy 0hr 0m 0s", format!("{}", Duration::new().set_weeks(1)));
 }
 
 #[test]
