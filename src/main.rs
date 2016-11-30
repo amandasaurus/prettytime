@@ -135,7 +135,7 @@ fn input2sec(input:String) -> Result<u64, String> {
         let sec = ms / 1_000_000_000;
         Ok(sec)
     } else {
-        Err("Invalid input".to_string())
+        Err(format!("Invalid input: {}", input))
     }
     
 }
@@ -178,7 +178,7 @@ fn test_parse_input() {
     assert_eq!(input2sec("10s".to_string()), Ok(10));
     assert_eq!(input2sec("10 s".to_string()), Ok(10));
     assert_eq!(input2sec("10 sec".to_string()), Ok(10));
-    assert_eq!(input2sec("10 foos".to_string()), Err("Invalid input".to_string()));
+    assert_eq!(input2sec("10 foos".to_string()), Err("Invalid input: 10 foos".to_string()));
 
     // seconds with precision
     assert_eq!(input2sec("10.5".to_string()), Ok(10));
